@@ -2,15 +2,15 @@
 * text=auto
 | Cursor Name             | Mousecape State     | Your File                         |
 | ----------------------- | ------------------- | --------------------------------- |
-| Arrow (default pointer) | `Arrow`             | `arrow_up_left.png`               |
+| Arrow (default pointer) | `Arrow`             | arrow_up_left.png                 |
 | Pointing Hand           | `Pointing Hand`     | (if you have one, otherwise skip) |
-| Text                    | `I-Beam`            | `text_select.png`                 |
-| Resize Left/Right       | `Resize Left/Right` | `resize_horizontal.png`           |
-| Resize Up/Down          | `Resize Up/Down`    | `resize_vertical.png`             |
-| Move                    | `Move`              | `move.png`                        |
-| Diagonal Resize (NW–SE) | `Resize Diagonal 1` | `arrow_up_right.png`              |
-| Diagonal Resize (NE–SW) | `Resize Diagonal 2` | `arrow_down_left.png`             |
-| Diagonal Resize 2       | `Resize Diagonal 2` | `arrow_down_right.png`            |
+| Text                    | `I-Beam`            | text_select.png                   |
+| Resize Left/Right       | Resize Left/Right   | resize_horizontal.png |
+| Resize Up/Down          | Resize Up/Down      | resize_vertical.png   |
+| Move                    | Move                | move.png`             |
+| Diagonal Resize (NW–SE) | `Resize Diagonal 1` | arrow_up_right.png    |
+| Diagonal Resize (NE–SW) | `Resize Diagonal 2` | arrow_down_left.png   |
+| Diagonal Resize 2       | `Resize Diagonal 2` | arrow_down_right.png  |
 from PIL import Image
 import os
 
