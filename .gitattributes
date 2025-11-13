@@ -1,51 +1,63 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-| Cursor Name             | Mousecape State     | Your File                         |
-| ----------------------- | ------------------- | --------------------------------- |
-| Arrow (default pointer) | Arrow             | arrow_up_left.png                 |
-| Pointing Hand           | Pointing Hand     | (if you have one, otherwise skip) |
-| Text                    | I-Beam            | text_select.png                   |
-| Resize Left/Right       | Resize Left/Right   | resize_horizontal.png |
-| Resize Up/Down          | Resize Up/Down      | resize_vertical.png   |
-| Move                    | Move                | move.png`             |
-| Diagonal Resize (NW–SE) | Resize Diagonal 1 | arrow_up_right.png    |
-| Diagonal Resize (NE–SW) | Resize Diagonal 2 | arrow_down_left.png   |
-| Diagonal Resize 2       | Resize Diagonal 2 | arrow_down_right.png  |
-from PIL import Image
-import os
+import zipfile, shutil, os
 
-# Input image and output folder
-input_path = "cursors.jpg"
-output_dir = "sliced_cursors"
-os.makedirs(output_dir, exist_ok=True)
+zip_path = "/mnt/data/animated_cursor_package.zip"
+img_src = "/mnt/data/okayucursor.2_MM_24_4_8_5_F_1.5_WW_.2.png"
+img_dst_name = "okayucursor.png"
 
-# Open image
-img = Image.open(input_path).convert("RGBA")
-width, height = img.size
+index_html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Animated Cursor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Custom Animated Cursor Demo</h1>
+    <script src="cursor.js"></script>
+</body>
+</html>
+"""
 
-# Estimate 3x3 grid
-cols, rows = 3, 3
-cell_w = width // cols
-cell_h = height // rows
+style_css = """body {
+    cursor: none;
+}
 
-# Names for each cursor
-names = [
-    "arrow_up_left", "arrow_up", "arrow_up_right",
-    "resize_horizontal", "text_select", "resize_vertical",
-    "arrow_down_left", "arrow_down_right", "move"
-]
+#animated-cursor {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    image-rendering: pixelated;
+    background-image: url("okayucursor.png");
+    background-repeat: no-repeat;
+    background-size: calc(32px * 8) 32px;
+}
+"""
 
-# Slice and tightly crop
-for i, name in enumerate(names):
-    x = (i % cols) * cell_w
-    y = (i // cols) * cell_h
-    crop = img.crop((x, y, x + cell_w, y + cell_h))
+cursor_js = """const frameWidth = 32;
+const frameCount = 8;
+const fps = 8;
 
-    # Tight crop around content
-    bbox = crop.getbbox()
-    if bbox:
-        crop = crop.crop(bbox)
+const cursor = document.createElement("div");
+cursor.id = "animated-cursor";
+document.body.appendChild(cursor);
 
-    output_path = os.path.join(output_dir, f"{name}.png")
-    crop.save(output_path)
-    print("Saved:", output_path)
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+
+let currentFrame = 0;
+setInterval(() => {
+    cursor.style.backgroundPosition = `-${currentFrame * frameWidth}px 0px`;
+    currentFrame = (currentFrame + 1) % frameCount;
+}, 1000 / fps);
+"""
+
+with zipfile.ZipFile(zip_path, 'w') as z:
+    z.writestr("index.html", index_html)
+    z.writestr("style.css", style_css)
+    z.writestr("cursor.js", cursor_js)
+    z.write(img_src, img_dst_name)
+
+zip_path
