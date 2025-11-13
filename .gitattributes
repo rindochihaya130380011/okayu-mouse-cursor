@@ -11,3 +11,41 @@
 | Diagonal Resize (NW–SE) | `Resize Diagonal 1` | `arrow_up_right.png`              |
 | Diagonal Resize (NE–SW) | `Resize Diagonal 2` | `arrow_down_left.png`             |
 | Diagonal Resize 2       | `Resize Diagonal 2` | `arrow_down_right.png`            |
+from PIL import Image
+import os
+
+# Input image and output folder
+input_path = "cursors.jpg"
+output_dir = "sliced_cursors"
+os.makedirs(output_dir, exist_ok=True)
+
+# Open image
+img = Image.open(input_path).convert("RGBA")
+width, height = img.size
+
+# Estimate 3x3 grid
+cols, rows = 3, 3
+cell_w = width // cols
+cell_h = height // rows
+
+# Names for each cursor
+names = [
+    "arrow_up_left", "arrow_up", "arrow_up_right",
+    "resize_horizontal", "text_select", "resize_vertical",
+    "arrow_down_left", "arrow_down_right", "move"
+]
+
+# Slice and tightly crop
+for i, name in enumerate(names):
+    x = (i % cols) * cell_w
+    y = (i // cols) * cell_h
+    crop = img.crop((x, y, x + cell_w, y + cell_h))
+
+    # Tight crop around content
+    bbox = crop.getbbox()
+    if bbox:
+        crop = crop.crop(bbox)
+
+    output_path = os.path.join(output_dir, f"{name}.png")
+    crop.save(output_path)
+    print("Saved:", output_path)
